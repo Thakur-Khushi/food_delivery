@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Login — QuickBite{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🍜</div>
+            <h2>Welcome Back!</h2>
+            <p>Login to continue ordering.</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Your username"
+                       class="form-input" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Your password"
+                       class="form-input" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-primary btn-full btn-large">Login →</button>
+        </form>
+
+        <p class="auth-switch">
+            New here? <a href="{% url 'register' %}">Create a free account</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

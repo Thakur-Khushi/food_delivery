@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Cart — QuickBite{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>🛒 Your Cart</h1>
+        <p>Review your items before checkout</p>
+    </div>
+</section>
+
+<section class="cart-page">
+    <div class="container cart-layout">
+
+        {% if cart_items %}
+        <!-- ===== CART ITEMS ===== -->
+        <div class="cart-items-section">
+            <div class="cart-items-list" id="cart-items-container">
+                {% for item in cart_items %}
+                <div class="cart-item" id="cart-item-{{ item.food_item.id }}">
+                    <img src="{{ item.food_item.get_image_url }}" alt="{{ item.food_item.name }}" class="cart-item-img">
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-name">{{ item.food_item.name }}</h3>
+                        <p class="cart-item-cat">{{ item.food_item.category.icon }} {{ item.food_item.category.name }}</p>
+                        <p class="cart-item-price">₹{{ item.price }}</p>
+                    </div>
+                    <div class="cart-item-controls">
+                        <!-- Quantity Controls -->
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="updateCart({{ item.food_item.id }}, {{ item.quantity }} - 1)">−</button>
+                            <span class="qty-display" id="qty-{{ item.food_item.id }}">{{ item.quantity }}</span>
+                            <button class="qty-btn" onclick="updateCart({{ item.food_item.id }}, {{ item.quantity }} + 1)">+</button>
+                        </div>
+                        <span class="cart-item-subtotal" id="subtotal-{{ item.food_item.id }}">₹{{ item.subtotal }}</span>
+                        <button class="btn-remove" onclick="removeFromCart({{ item.food_item.id }}, '{{ item.food_item.name }}')" title="Remove">🗑️</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ===== ORDER SUMMARY ===== -->
+        <div class="cart-summary">
+            <div class="summary-card">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">₹{{ total }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Fee</span>
+                    <span class="text-green">FREE</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total</span>
+                    <span id="cart-total">₹{{ total }}</span>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'checkout' %}" class="btn-primary btn-full">Proceed to Checkout →</a>
+                {% else %}
+                <a href="{% url 'login' %}?next={% url 'checkout' %}" class="btn-primary btn-full">Login to Checkout</a>
+                {% endif %}
+                <a href="{% url 'menu' %}" class="btn-ghost btn-full" style="margin-top:0.5rem">← Continue Shopping</a>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- ===== EMPTY CART ===== -->
+        <div class="empty-cart-wrap">
+            <div class="empty-state">
+                <span class="empty-emoji">🛒</span>
+                <h3>Your cart is empty!</h3>
+                <p>Looks like you haven't added anything yet.</p>
+                <a href="{% url 'menu' %}" class="btn-primary" style="display:inline-block;margin-top:1.5rem;">Browse Menu →</a>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Store CSRF token from Django for AJAX requests
+const CSRF_TOKEN = '{{ csrf_token }}';
+
+// Update item quantity in cart
+async function updateCart(itemId, newQty) {
+    if (newQty < 0) newQty = 0;
+    const response = await fetch('/cart/update/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+        body: JSON.stringify({ item_id: itemId, quantity: newQty })
+    });
+    const data = await response.json();
+    if (data.success) {
+        if (newQty === 0) {
+            // Remove item row from DOM
+            document.getElementById(`cart-item-${itemId}`)?.remove();
+        } else {
+            // Update quantity display and subtotal
+            const item = data.cart_items.find(i => i.id === itemId);
+            if (item) {
+                document.getElementById(`qty-${itemId}`).textContent = item.quantity;
+                document.getElementById(`subtotal-${itemId}`).textContent = `₹${item.subtotal}`;
+            }
+        }
+        // Update totals
+        document.getElementById('cart-subtotal').textContent = `₹${data.cart_total}`;
+        document.getElementById('cart-total').textContent = `₹${data.cart_total}`;
+        document.getElementById('cart-badge').textContent = data.cart_count;
+
+        // If cart is now empty, reload page to show empty state
+        if (data.cart_count === 0) location.reload();
+    }
+}
+
+// Remove item from cart
+async function removeFromCart(itemId, itemName) {
+    if (!confirm(`Remove "${itemName}" from cart?`)) return;
+    const response = await fetch('/cart/remove/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+        body: JSON.stringify({ item_id: itemId })
+    });
+    const data = await response.json();
+    if (data.success) {
+        document.getElementById(`cart-item-${itemId}`)?.remove();
+        document.getElementById('cart-subtotal').textContent = `₹${data.cart_total}`;
+        document.getElementById('cart-total').textContent = `₹${data.cart_total}`;
+        document.getElementById('cart-badge').textContent = data.cart_count;
+        showToast(`${itemName} removed from cart`);
+        if (data.cart_count === 0) location.reload();
+    }
+}
+</script>
+{% endblock %}

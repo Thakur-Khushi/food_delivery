@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up — QuickBite{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🍜</div>
+            <h2>Create Account</h2>
+            <p>Join QuickBite and start ordering!</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                <input type="{{ field.field.widget.input_type }}"
+                       name="{{ field.html_name }}"
+                       id="{{ field.id_for_label }}"
+                       placeholder="{{ field.label }}"
+                       class="form-input {% if field.errors %}input-error{% endif %}"
+                       {% if field.value %}value="{{ field.value }}"{% endif %}>
+                {% if field.errors %}
+                <p class="form-error">{{ field.errors.0 }}</p>
+                {% endif %}
+                {% if field.help_text and not field.errors %}
+                <p class="form-help">{{ field.help_text }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary btn-full btn-large">Create Account 🚀</button>
+        </form>
+
+        <p class="auth-switch">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

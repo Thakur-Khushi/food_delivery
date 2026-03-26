@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} — QuickBite{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Order #{{ order.id }}</h1>
+        <p>Placed on {{ order.created_at|date:"d M Y, g:i A" }}</p>
+    </div>
+</section>
+
+<section class="order-detail-page">
+    <div class="container order-detail-layout">
+
+        <!-- ===== ORDER STATUS TRACKER ===== -->
+        <div class="status-tracker-card">
+            <h3>📍 Order Status</h3>
+            <div class="status-tracker">
+                {% with steps="placed,preparing,out_for_delivery,delivered" %}
+                {% for step in steps.split %}{% endfor %}
+                {% endwith %}
+
+                <!-- Step 1: Placed -->
+                <div class="tracker-step {% if current_step >= 0 %}step-done{% endif %}">
+                    <div class="tracker-circle">{% if current_step >= 0 %}✓{% else %}1{% endif %}</div>
+                    <div class="tracker-label">📋 Placed</div>
+                </div>
+                <div class="tracker-line {% if current_step >= 1 %}line-done{% endif %}"></div>
+
+                <!-- Step 2: Preparing -->
+                <div class="tracker-step {% if current_step >= 1 %}step-done{% elif current_step == 1 %}step-active{% endif %}">
+                    <div class="tracker-circle">{% if current_step >= 1 %}✓{% else %}2{% endif %}</div>
+                    <div class="tracker-label">👨‍🍳 Preparing</div>
+                </div>
+                <div class="tracker-line {% if current_step >= 2 %}line-done{% endif %}"></div>
+
+                <!-- Step 3: Out for Delivery -->
+                <div class="tracker-step {% if current_step >= 2 %}step-done{% endif %}">
+                    <div class="tracker-circle">{% if current_step >= 2 %}✓{% else %}3{% endif %}</div>
+                    <div class="tracker-label">🚴 On the Way</div>
+                </div>
+                <div class="tracker-line {% if current_step >= 3 %}line-done{% endif %}"></div>
+
+                <!-- Step 4: Delivered -->
+                <div class="tracker-step {% if current_step >= 3 %}step-done{% endif %}">
+                    <div class="tracker-circle">{% if current_step >= 3 %}✓{% else %}4{% endif %}</div>
+                    <div class="tracker-label">✅ Delivered</div>
+                </div>
+            </div>
+
+            <div class="current-status-badge status-{{ order.status }}">
+                {% if order.status == 'placed' %}📋 Order Placed — We've received your order!
+                {% elif order.status == 'preparing' %}👨‍🍳 Preparing — Our chefs are cooking your food!
+                {% elif order.status == 'out_for_delivery' %}🚴 Out for Delivery — On the way to you!
+                {% elif order.status == 'delivered' %}✅ Delivered — Enjoy your meal!
+                {% elif order.status == 'cancelled' %}❌ Order Cancelled
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===== ORDER ITEMS + DELIVERY INFO ===== -->
+        <div class="order-detail-main">
+            <!-- Items List -->
+            <div class="detail-card">
+                <h3>🍽️ Items Ordered</h3>
+                {% for item in items %}
+                <div class="detail-item-row">
+                    <div>
+                        <span class="detail-item-name">{{ item.food_name }}</span>
+                        <span class="detail-item-qty">× {{ item.quantity }}</span>
+                    </div>
+                    <span class="detail-item-price">₹{{ item.get_subtotal }}</span>
+                </div>
+                {% endfor %}
+                <hr class="summary-divider">
+                <div class="detail-item-row summary-total">
+                    <span>Total Paid</span>
+                    <span>₹{{ order.total_price }}</span>
+                </div>
+            </div>
+
+            <!-- Delivery Info -->
+            <div class="detail-card">
+                <h3>📦 Delivery Details</h3>
+                <div class="detail-info-row">
+                    <span class="detail-label">📞 Phone</span>
+                    <span>{{ order.phone }}</span>
+                </div>
+                <div class="detail-info-row">
+                    <span class="detail-label">📍 Address</span>
+                    <span>{{ order.address }}</span>
+                </div>
+                <div class="detail-info-row">
+                    <span class="detail-label">💳 Payment</span>
+                    <span>Cash on Delivery</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container" style="margin-top:1rem;padding-bottom:2rem;">
+        <a href="{% url 'order_list' %}" class="btn-outline">← Back to Orders</a>
+        <a href="{% url 'menu' %}" class="btn-primary" style="margin-left:1rem;">Order Again 🍜</a>
+    </div>
+</section>
+{% endblock %}

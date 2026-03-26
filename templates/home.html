@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}QuickBite — Delicious Food Delivered Fast{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-tag">🔥 Hot & Fresh</div>
+        <h1 class="hero-title">Food You Love,<br><span>Delivered Fast</span></h1>
+        <p class="hero-subtitle">From our kitchen to your door in under 30 minutes. Browse hundreds of delicious dishes.</p>
+        <div class="hero-actions">
+            <a href="{% url 'menu' %}" class="btn-primary">Explore Menu →</a>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn-ghost">Sign Up Free</a>
+            {% endif %}
+        </div>
+        <div class="hero-stats">
+            <div class="stat"><strong>500+</strong><span>Dishes</span></div>
+            <div class="stat"><strong>30min</strong><span>Avg Delivery</span></div>
+            <div class="stat"><strong>4.8★</strong><span>Rating</span></div>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="hero-emoji-grid">
+            <span class="float-item" style="--delay:0s">🍕</span>
+            <span class="float-item" style="--delay:0.5s">🍔</span>
+            <span class="float-item" style="--delay:1s">🥤</span>
+            <span class="float-item" style="--delay:1.5s">🍛</span>
+            <span class="float-item" style="--delay:0.3s">🍰</span>
+            <span class="float-item" style="--delay:0.8s">🥪</span>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CATEGORY FILTER ===== -->
+<section class="category-section">
+    <div class="container">
+        <h2 class="section-title">Browse by Category</h2>
+        <div class="category-pills">
+            <a href="{% url 'home' %}" class="pill {% if not selected_category %}pill-active{% endif %}">
+                🍽️ All
+            </a>
+            {% for category in categories %}
+            <a href="?category={{ category.id }}"
+               class="pill {% if selected_category == category.id|stringformat:'s' %}pill-active{% endif %}">
+                {{ category.icon }} {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOD ITEMS GRID ===== -->
+<section class="food-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                {% if selected_category %}
+                    {% for cat in categories %}{% if cat.id|stringformat:'s' == selected_category %}{{ cat.icon }} {{ cat.name }}{% endif %}{% endfor %}
+                {% else %}
+                    🌟 Featured Items
+                {% endif %}
+            </h2>
+            <span class="item-count">{{ food_items.count }} items</span>
+        </div>
+
+        {% if food_items %}
+        <div class="food-grid">
+            {% for item in food_items %}
+            <div class="food-card" data-item-id="{{ item.id }}">
+                <div class="food-card-img-wrap">
+                    <img src="{{ item.get_image_url }}" alt="{{ item.name }}" class="food-card-img" loading="lazy">
+                    {% if item.is_vegetarian %}
+                    <span class="veg-badge">🌿 Veg</span>
+                    {% else %}
+                    <span class="nonveg-badge">🍖 Non-Veg</span>
+                    {% endif %}
+                </div>
+                <div class="food-card-body">
+                    <span class="food-category-tag">{{ item.category.icon }} {{ item.category.name }}</span>
+                    <h3 class="food-name">{{ item.name }}</h3>
+                    <p class="food-desc">{{ item.description|truncatechars:70 }}</p>
+                    <div class="food-footer">
+                        <span class="food-price">₹{{ item.price }}</span>
+                        <button class="btn-add-cart"
+                                onclick="addToCart({{ item.id }}, '{{ item.name }}')"
+                                data-item-id="{{ item.id }}">
+                            <span class="btn-icon">+</span> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-emoji">🍽️</span>
+            <h3>No items found</h3>
+            <p>Try a different category or <a href="{% url 'home' %}">view all items</a></p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ===== WHY US SECTION ===== -->
+<section class="why-section">
+    <div class="container">
+        <h2 class="section-title text-center">Why Choose QuickBite?</h2>
+        <div class="why-grid">
+            <div class="why-card">
+                <span class="why-icon">⚡</span>
+                <h3>Lightning Fast</h3>
+                <p>30-minute delivery guaranteed or your next order is on us.</p>
+            </div>
+            <div class="why-card">
+                <span class="why-icon">🍳</span>
+                <h3>Fresh Ingredients</h3>
+                <p>Every dish prepared fresh with quality ingredients daily.</p>
+            </div>
+            <div class="why-card">
+                <span class="why-icon">💳</span>
+                <h3>Easy Payment</h3>
+                <p>Cash on Delivery — pay only when your food arrives.</p>
+            </div>
+            <div class="why-card">
+                <span class="why-icon">📍</span>
+                <h3>Order Tracking</h3>
+                <p>Track your order in real-time from kitchen to your door.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

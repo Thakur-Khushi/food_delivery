@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — QuickBite{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>👋 Hello, {{ user.username }}!</h1>
+        <p>Manage your account and track orders</p>
+    </div>
+</section>
+
+<section class="dashboard-page">
+    <div class="container dashboard-layout">
+        <!-- Profile Card -->
+        <div class="dashboard-sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar">{{ user.username|first|upper }}</div>
+                <h3>{{ user.username }}</h3>
+                <p>{{ user.email }}</p>
+                <p class="member-since">Member since {{ user.date_joined|date:"M Y" }}</p>
+                <a href="{% url 'order_list' %}" class="btn-primary btn-full" style="margin-top:1rem;">View All Orders</a>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="dashboard-main">
+            <h3 class="section-subtitle">Recent Orders</h3>
+            {% if orders %}
+            {% for order in orders|slice:":5" %}
+            <div class="order-card">
+                <div class="order-card-header">
+                    <div>
+                        <span class="order-id">#{{ order.id }}</span>
+                        <span class="order-date">{{ order.created_at|date:"d M Y" }}</span>
+                    </div>
+                    <span class="status-badge status-{{ order.status }}">
+                        {% if order.status == 'placed' %}📋 Placed
+                        {% elif order.status == 'preparing' %}👨‍🍳 Preparing
+                        {% elif order.status == 'out_for_delivery' %}🚴 On the Way
+                        {% elif order.status == 'delivered' %}✅ Delivered
+                        {% elif order.status == 'cancelled' %}❌ Cancelled
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="order-items-preview">
+                    {% for item in order.items.all|slice:":2" %}
+                    <span class="order-item-chip">{{ item.food_name }}</span>
+                    {% endfor %}
+                </div>
+                <div class="order-card-footer">
+                    <span class="order-total">₹{{ order.total_price }}</span>
+                    <a href="{% url 'order_detail' order.id %}" class="btn-outline-sm">Track →</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state" style="padding:2rem 0">
+                <span class="empty-emoji">🛒</span>
+                <h3>No orders yet</h3>
+                <a href="{% url 'menu' %}" class="btn-primary" style="display:inline-block;margin-top:1rem;">Start Ordering!</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

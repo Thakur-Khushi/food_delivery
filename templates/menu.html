@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Menu — QuickBite{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Our Menu 🍽️</h1>
+        <p>Explore our wide variety of delicious dishes</p>
+    </div>
+</section>
+
+<section class="menu-page">
+    <div class="container menu-layout">
+        <!-- ===== SIDEBAR: Category Filters ===== -->
+        <aside class="menu-sidebar">
+            <h3>Categories</h3>
+            <ul class="sidebar-cats">
+                <li>
+                    <a href="{% url 'menu' %}" class="sidebar-cat-link {% if not selected_category %}sidebar-active{% endif %}">
+                        🍽️ All Items
+                    </a>
+                </li>
+                {% for category in categories %}
+                <li>
+                    <a href="?category={{ category.id }}"
+                       class="sidebar-cat-link {% if selected_category == category.id|stringformat:'s' %}sidebar-active{% endif %}">
+                        {{ category.icon }} {{ category.name }}
+                        <span class="cat-count">{{ category.food_items.count }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <!-- ===== MAIN: Food Items ===== -->
+        <div class="menu-main">
+            <div class="menu-toolbar">
+                <span class="result-count">{{ food_items.count }} items found</span>
+            </div>
+
+            {% if food_items %}
+            <div class="food-grid">
+                {% for item in food_items %}
+                <div class="food-card" data-item-id="{{ item.id }}">
+                    <div class="food-card-img-wrap">
+                        <img src="{{ item.get_image_url }}" alt="{{ item.name }}" class="food-card-img" loading="lazy">
+                        {% if item.is_vegetarian %}
+                        <span class="veg-badge">🌿 Veg</span>
+                        {% else %}
+                        <span class="nonveg-badge">🍖 Non-Veg</span>
+                        {% endif %}
+                    </div>
+                    <div class="food-card-body">
+                        <span class="food-category-tag">{{ item.category.icon }} {{ item.category.name }}</span>
+                        <h3 class="food-name">{{ item.name }}</h3>
+                        <p class="food-desc">{{ item.description|truncatechars:80 }}</p>
+                        <div class="food-footer">
+                            <span class="food-price">₹{{ item.price }}</span>
+                            <button class="btn-add-cart"
+                                    onclick="addToCart({{ item.id }}, '{{ item.name }}')"
+                                    data-item-id="{{ item.id }}">
+                                <span class="btn-icon">+</span> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <span class="empty-emoji">😕</span>
+                <h3>No items in this category</h3>
+                <a href="{% url 'menu' %}" class="btn-primary" style="display:inline-block;margin-top:1rem;">View All</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

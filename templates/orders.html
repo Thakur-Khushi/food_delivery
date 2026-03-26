@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders — QuickBite{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>📦 My Orders</h1>
+        <p>Track all your previous and current orders</p>
+    </div>
+</section>
+
+<section class="orders-page">
+    <div class="container">
+        {% if orders %}
+        <div class="orders-list">
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-card-header">
+                    <div>
+                        <span class="order-id">#{{ order.id }}</span>
+                        <span class="order-date">{{ order.created_at|date:"d M Y, g:i A" }}</span>
+                    </div>
+                    <span class="status-badge status-{{ order.status }}">
+                        {% if order.status == 'placed' %}📋 Placed
+                        {% elif order.status == 'preparing' %}👨‍🍳 Preparing
+                        {% elif order.status == 'out_for_delivery' %}🚴 Out for Delivery
+                        {% elif order.status == 'delivered' %}✅ Delivered
+                        {% elif order.status == 'cancelled' %}❌ Cancelled
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="order-items-preview">
+                    {% for item in order.items.all|slice:":3" %}
+                    <span class="order-item-chip">{{ item.food_name }} × {{ item.quantity }}</span>
+                    {% endfor %}
+                    {% if order.items.count > 3 %}
+                    <span class="order-item-chip more-chip">+{{ order.items.count|add:"-3" }} more</span>
+                    {% endif %}
+                </div>
+
+                <div class="order-card-footer">
+                    <span class="order-total">Total: <strong>₹{{ order.total_price }}</strong></span>
+                    <a href="{% url 'order_detail' order.id %}" class="btn-outline-sm">View Details →</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-emoji">📦</span>
+            <h3>No orders yet!</h3>
+            <p>You haven't placed any orders. Start browsing our menu!</p>
+            <a href="{% url 'menu' %}" class="btn-primary" style="display:inline-block;margin-top:1.5rem;">Browse Menu →</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
