@@ -3,6 +3,7 @@ Menu App Models
 FoodItem stores all food data with category support
 """
 from django.db import models
+from django.core.files.storage import default_storage
 
 class Category(models.Model):
     """Food categories like Pizza, Burger, Drinks, etc."""
@@ -34,6 +35,8 @@ class FoodItem(models.Model):
 
     def get_image_url(self):
         """Return image URL or a placeholder if no image uploaded"""
-        if self.image:
+        # In production, DB can contain an image path even when the file is missing.
+        # Guard against broken media links and return a placeholder instead.
+        if self.image and default_storage.exists(self.image.name):
             return self.image.url
         return f"https://placehold.co/400x300/FF6B35/FFFFFF?text={self.name.replace(' ', '+')}"

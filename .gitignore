@@ -8,7 +8,10 @@ __pycache__/
 
 # Django
 db.sqlite3
-media/
+# Ignore media by default, but keep sample food images versioned
+media/*
+!media/food_images/
+!media/food_images/**
 *.log
 local_settings.py
 
