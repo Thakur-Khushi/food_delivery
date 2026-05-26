@@ -125,12 +125,6 @@ python manage.py runserver
 
 ## 🔑 Admin Panel Usage
 
-Login at http://127.0.0.1:8000/admin/ with `admin` / `admin123`
-
-**You can:**
-- ➕ Add / Edit / Delete food items (with images)
-- 📦 Update order status (Placed → Preparing → Out for Delivery → Delivered)
-- 🗂️ Manage categories
 
 **To update order status:**
 1. Go to Admin → Orders
