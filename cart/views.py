@@ -6,6 +6,7 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from menu.models import FoodItem
 from .cart import Cart
 
@@ -21,6 +22,7 @@ def cart_detail(request):
     })
 
 
+@login_required
 @require_POST
 def cart_add(request):
     """
@@ -51,6 +53,7 @@ def cart_add(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 
+@login_required
 @require_POST
 def cart_remove(request):
     """
@@ -75,6 +78,7 @@ def cart_remove(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
 
+@login_required
 @require_POST
 def cart_update(request):
     """

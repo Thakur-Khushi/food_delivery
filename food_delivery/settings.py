@@ -3,12 +3,14 @@ Django Settings for Food Delivery Application
 """
 from pathlib import Path
 import os
+from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-food-delivery-secret-key-change-in-production'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+# 🔒 SECURITY: Load from environment variables (use .env file)
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-only')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -87,3 +89,27 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_SECURE = not DEBUG  # Only send cookie over HTTPS in production
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
+SESSION_COOKIE_SAMESITE = 'Strict'  # CSRF protection
+
+# 🔒 CSRF Protection
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Strict'
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:8000', cast=lambda v: [s.strip() for s in v.split(',')])
+
+# 🔒 HTTPS & Security Headers
+SECURE_SSL_REDIRECT = not DEBUG  # Force HTTPS in production
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+SECURE_CONTENT_SECURITY_POLICY = {
+    'DEFAULT_SRC': ("'self'",),
+    'SCRIPT_SRC': ("'self'", "'unsafe-inline'"),  # Remove unsafe-inline in production
+    'STYLE_SRC': ("'self'", "'unsafe-inline'"),
+    'IMG_SRC': ("'self'", 'data:', 'https:'),
+}
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True

@@ -11,10 +11,14 @@ def home(request):
     categories = Category.objects.all()
     food_items = FoodItem.objects.filter(is_available=True).select_related('category')
 
-    # Get selected category from URL query param
+    # 🔒 SECURITY: Validate category parameter
     selected_category = request.GET.get('category', None)
     if selected_category:
-        food_items = food_items.filter(category__id=selected_category)
+        try:
+            category_id = int(selected_category)
+            food_items = food_items.filter(category__id=category_id)
+        except (ValueError, TypeError):
+            pass  # Ignore invalid category
 
     context = {
         'food_items': food_items,
@@ -29,9 +33,14 @@ def menu(request):
     categories = Category.objects.all()
     food_items = FoodItem.objects.filter(is_available=True).select_related('category')
 
+    # 🔒 SECURITY: Validate category parameter
     selected_category = request.GET.get('category', None)
     if selected_category:
-        food_items = food_items.filter(category__id=selected_category)
+        try:
+            category_id = int(selected_category)
+            food_items = food_items.filter(category__id=category_id)
+        except (ValueError, TypeError):
+            pass  # Ignore invalid category
 
     context = {
         'food_items': food_items,

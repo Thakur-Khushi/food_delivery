@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.http import url_has_allowed_host_and_scheme
 from .forms import RegisterForm
 from orders.models import Order
 
@@ -41,8 +42,10 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, f"Welcome back, {user.username}!")
-            # Redirect to 'next' URL if provided (e.g., from cart)
+            # 🔒 SECURITY: Validate 'next' URL to prevent open redirect
             next_url = request.GET.get('next', 'home')
+            if not url_has_allowed_host_and_scheme(next_url, allowed_hosts=request.get_host()):
+                next_url = 'home'
             return redirect(next_url)
         else:
             messages.error(request, "Invalid username or password.")

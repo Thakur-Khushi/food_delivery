@@ -18,5 +18,6 @@ class RegisterForm(UserCreationForm):
         """Validate that email is unique"""
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email is already registered.")
+            # 🔒 SECURITY: Don't reveal if email exists (prevents user enumeration)
+            raise forms.ValidationError("This email is already in use.")
         return email
