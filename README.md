@@ -2,8 +2,7 @@
 
 A full-stack food delivery application built with Django + SQLite + Vanilla JS. Modular, well-structured, and built following Django best practices with separate apps for auth, menu, cart, and orders.
 
-🔗 Live Demo: [Add your PythonAnywhere link here]
-🔗 GitHub: [Add repo link here]
+🔗 Live Demo:https://khushi010305.pythonanywhere.com/
 
 
 📸 Screenshots
