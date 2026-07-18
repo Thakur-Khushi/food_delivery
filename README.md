@@ -1,13 +1,33 @@
-# 🍜 QuickBite — Online Food Delivery Web App
+🍕 Food Delivery Web App
 
-A full-stack food delivery application built with **Django + SQLite + Vanilla JS**.  
-Beginner-friendly, modular, fully commented, production-structured.
+A full-stack food delivery application built with Django + SQLite + Vanilla JS. Modular, well-structured, and built following Django best practices with separate apps for auth, menu, cart, and orders.
 
----
+🔗 Live Demo: [Add your PythonAnywhere link here]
+🔗 GitHub: [Add repo link here]
 
-## 🗂️ Project Structure
 
-```
+📸 Screenshots
+
+
+Add 3-4 screenshots or a short GIF here (home page, menu with filters, cart, order tracking). This is the first thing a recruiter looks at — don't skip it.
+
+
+
+
+✨ Features
+
+
+Browse menu with category filters (Pizza, Burger, Drinks, Biryani, Desserts, Sandwiches)
+User registration, login, logout, and dashboard
+Session-based shopping cart with AJAX — add/remove/update items with no page reload
+Checkout flow with delivery details and Cash on Delivery
+Order tracking with live status updates (placed → preparing → out for delivery → delivered)
+Django admin panel for managing food items, categories, and order statuses
+
+
+
+🗂️ Project Structure
+
 food_delivery/
 ├── food_delivery/          ← Django project settings & main URLs
 │   ├── settings.py
@@ -26,9 +46,9 @@ food_delivery/
 │   └── urls.py
 │
 ├── cart/                   ← Session-based cart logic
-│   ├── cart.py             (Cart class — core logic)
+│   ├── cart.py              (Cart class — core logic)
 │   ├── context_processors.py
-│   ├── views.py            (AJAX endpoints)
+│   ├── views.py             (AJAX endpoints)
 │   └── urls.py
 │
 ├── orders/                 ← Checkout, Order placement, Order tracking
@@ -38,234 +58,178 @@ food_delivery/
 │   ├── admin.py
 │   └── urls.py
 │
-├── templates/              ← All HTML templates
-│   ├── base.html           (Navbar, Footer, Messages layout)
-│   ├── home.html           (Hero + Food grid)
-│   ├── menu.html           (Sidebar filter + Food grid)
-│   ├── cart.html           (Cart items + Summary)
-│   ├── checkout.html       (Delivery form + COD)
-│   ├── orders.html         (All orders list)
-│   ├── order_detail.html   (Status tracker + Item details)
+├── templates/               ← All HTML templates
+│   ├── base.html            (Navbar, Footer, Messages layout)
+│   ├── home.html            (Hero + Food grid)
+│   ├── menu.html            (Sidebar filter + Food grid)
+│   ├── cart.html            (Cart items + Summary)
+│   ├── checkout.html        (Delivery form + COD)
+│   ├── orders.html          (All orders list)
+│   ├── order_detail.html    (Status tracker + Item details)
 │   └── users/
 │       ├── login.html
 │       ├── register.html
 │       └── dashboard.html
 │
 ├── static/
-│   ├── css/style.css       ← All styling (Terracotta + Cream theme)
-│   └── js/main.js          ← Cart AJAX, Toast, Mobile menu
+│   ├── css/style.css        ← All styling (Terracotta + Cream theme)
+│   └── js/main.js           ← Cart AJAX, Toast, Mobile menu
 │
-├── media/                  ← Uploaded food images (auto-created)
-├── db.sqlite3              ← SQLite database (auto-created)
-├── seed_data.py            ← Sample data script
+├── media/                   ← Uploaded food images (auto-created)
+├── db.sqlite3                ← SQLite database (auto-created)
+├── seed_data.py               ← Sample data script
 └── manage.py
-```
 
----
 
-## ⚡ Quick Setup (Step-by-Step)
+⚡ Setup & Installation
 
-### Step 1 — Clone / Extract the project
-```bash
-cd your/projects/folder
-# If zip: unzip food_delivery.zip
+Step 1 — Clone the project
+
+bashgit clone <your-repo-url>
 cd food_delivery
-```
 
-### Step 2 — Create and activate virtual environment
-```bash
-# Windows
+Step 2 — Create and activate a virtual environment
+
+bash# Windows
 python -m venv venv
 venv\Scripts\activate
 
 # macOS / Linux
 python3 -m venv venv
 source venv/bin/activate
-```
 
-### Step 3 — Install dependencies
-```bash
-pip install django pillow
-```
-> `pillow` is needed for handling food item images.
+Step 3 — Install dependencies
 
-### Step 4 — Apply database migrations
-```bash
-python manage.py makemigrations
+bashpip install django pillow
+
+
+pillow is required for handling food item images.
+
+
+
+Step 4 — Apply database migrations
+
+bashpython manage.py makemigrations
 python manage.py migrate
-```
 
-### Step 5 — Load sample data (categories + food items + admin user)
-```bash
-python seed_data.py
-```
+Step 5 — Load sample data
+
+bashpython seed_data.py
+
 This creates:
-- 6 categories: Pizza, Burger, Drinks, Biryani, Desserts, Sandwiches
-- 20 food items with prices
-- Admin superuser: **username=`admin`**, **password=`admin123`**
-
-### Step 6 — Run the server
-```bash
-python manage.py runserver
-```
-
-### Step 7 — Open in browser
-| URL | Page |
-|-----|------|
-| http://127.0.0.1:8000/ | Home page |
-| http://127.0.0.1:8000/menu/ | Full menu with filters |
-| http://127.0.0.1:8000/register/ | Create account |
-| http://127.0.0.1:8000/login/ | Login |
-| http://127.0.0.1:8000/cart/ | View cart |
-| http://127.0.0.1:8000/orders/checkout/ | Checkout |
-| http://127.0.0.1:8000/orders/ | My orders |
-| http://127.0.0.1:8000/admin/ | Django admin panel |
-
----
-
-## 🔑 Admin Panel Usage
 
 
-**To update order status:**
-1. Go to Admin → Orders
-2. Find the order
-3. Change "Status" column directly in the list view → Save
+6 categories: Pizza, Burger, Drinks, Biryani, Desserts, Sandwiches
+20 sample food items with prices
+An admin superuser (credentials printed in your terminal / set via env variable — see note below)
 
----
 
-## 🛠️ How the Cart Works
 
-The cart uses **Django sessions** (no extra database table needed):
+⚠️ Don't hardcode admin credentials in seed_data.py for anything beyond local testing. Read them from environment variables or prompt for input, e.g.:
 
-```
-Session['cart'] = {
+pythonimport os
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme")
+
+
+
+Step 6 — Run the server
+
+bashpython manage.py runserver
+
+Step 7 — Open in browser
+
+URLPage/Home page/menu/Full menu with filters/register/Create account/login/Login/cart/View cart/orders/checkout/Checkout/orders/My orders/admin/Django admin panel
+
+
+🛠️ How the Cart Works
+
+The cart uses Django sessions — no extra database table needed:
+
+pythonsession['cart'] = {
     "1": { "quantity": 2, "price": "199.00" },
     "3": { "quantity": 1, "price": "129.00" }
 }
-```
 
-When you add an item → **AJAX POST** to `/cart/add/` → response updates badge count.  
-No page reload needed! The `cart.py` `Cart` class handles all logic.
+Adding an item triggers an AJAX POST to /cart/add/, which updates the cart badge count without a page reload. All logic lives in the Cart class in cart/cart.py.
 
----
 
-## 🌐 URL Summary
+🌐 URL Summary
 
-| URL Pattern | View | Purpose |
-|------------|------|---------|
-| `/` | `menu.views.home` | Home + food grid |
-| `/menu/` | `menu.views.menu` | Full menu + sidebar filter |
-| `/register/` | `users.views.register_view` | Registration |
-| `/login/` | `users.views.login_view` | Login |
-| `/logout/` | `users.views.logout_view` | Logout |
-| `/dashboard/` | `users.views.dashboard` | User dashboard |
-| `/cart/` | `cart.views.cart_detail` | View cart |
-| `/cart/add/` | `cart.views.cart_add` | AJAX: Add to cart |
-| `/cart/remove/` | `cart.views.cart_remove` | AJAX: Remove item |
-| `/cart/update/` | `cart.views.cart_update` | AJAX: Update qty |
-| `/orders/checkout/` | `orders.views.checkout` | Checkout form |
-| `/orders/` | `orders.views.order_list` | All orders |
-| `/orders/<id>/` | `orders.views.order_detail` | Order detail + tracker |
+URL PatternViewPurpose/menu.views.homeHome + food grid/menu/menu.views.menuFull menu + sidebar filter/register/users.views.register_viewRegistration/login/users.views.login_viewLogin/logout/users.views.logout_viewLogout/dashboard/users.views.dashboardUser dashboard/cart/cart.views.cart_detailView cart/cart/add/cart.views.cart_addAJAX: Add to cart/cart/remove/cart.views.cart_removeAJAX: Remove item/cart/update/cart.views.cart_updateAJAX: Update quantity/orders/checkout/orders.views.checkoutCheckout form/orders/orders.views.order_listAll orders/orders/<id>/orders.views.order_detailOrder detail + tracker
 
----
 
-## 🍕 Adding Food Items with Images
+🧩 Models Overview
 
-**Option 1 — Django Admin (recommended):**
-1. Go to http://127.0.0.1:8000/admin/menu/fooditem/add/
-2. Fill name, price, category, upload image
-3. Save
+menu.Category
 
-**Option 2 — Programmatically (in seed_data.py or shell):**
-```python
-from menu.models import FoodItem, Category
-cat = Category.objects.get(name='Pizza')
-FoodItem.objects.create(
-    name='Cheese Burst',
-    price=299,
-    category=cat,
-    description='Extra cheese everywhere',
-    is_vegetarian=True
-)
-```
+FieldTypeNotesnameCharFielde.g. "Pizza"iconCharFieldEmoji e.g. "🍕"
 
-> 📌 If no image is uploaded, a colored placeholder is automatically shown.
+menu.FoodItem
 
----
+FieldTypeNotesnameCharFieldItem namepriceDecimalFieldIn ₹categoryFK → CategoryimageImageFieldOptionalis_vegetarianBooleanFieldShows green badgeis_availableBooleanFieldHides if False
 
-## 🧩 Models Overview
+orders.Order
 
-### `menu.Category`
-| Field | Type | Notes |
-|-------|------|-------|
-| name | CharField | e.g. "Pizza" |
-| icon | CharField | Emoji e.g. "🍕" |
+FieldTypeNotesuserFK → UseraddressTextFieldDelivery addressphoneCharFieldtotal_priceDecimalFieldstatusCharFieldplaced / preparing / out_for_delivery / deliveredpayment_methodCharFieldcod
 
-### `menu.FoodItem`
-| Field | Type | Notes |
-|-------|------|-------|
-| name | CharField | Item name |
-| price | DecimalField | In ₹ |
-| category | FK → Category | |
-| image | ImageField | Optional |
-| is_vegetarian | BooleanField | Shows green badge |
-| is_available | BooleanField | Hides if False |
+orders.OrderItem
 
-### `orders.Order`
-| Field | Type | Notes |
-|-------|------|-------|
-| user | FK → User | |
-| address | TextField | Delivery address |
-| phone | CharField | |
-| total_price | DecimalField | |
-| status | CharField | placed/preparing/out_for_delivery/delivered |
-| payment_method | CharField | cod |
+FieldTypeNotesorderFK → Orderfood_itemFK → FoodItemSET_NULL on deletefood_nameCharFieldSnapshot at order timefood_priceDecimalFieldSnapshot at order timequantityPositiveIntegerField
 
-### `orders.OrderItem`
-| Field | Type | Notes |
-|-------|------|-------|
-| order | FK → Order | |
-| food_item | FK → FoodItem | SET_NULL on delete |
-| food_name | CharField | Snapshot at order time |
-| food_price | DecimalField | Snapshot at order time |
-| quantity | PositiveIntegerField | |
 
----
+✅ Testing
 
-## 🚀 Extending the App
 
-| Feature | How to add |
-|---------|-----------|
-| Online payment | Integrate Razorpay/Stripe in `orders/views.py` checkout |
-| Food ratings | Add a `Rating` model in menu app |
-| Search | Add search filter in `menu/views.py` using `Q()` objects |
-| Email confirmation | Use Django's `send_mail()` after order placement |
-| REST API | Install `djangorestframework`, add serializers |
-| Custom user profile | Extend `AbstractUser` in `users/models.py` |
+Currently no automated tests. Planned additions:
 
----
 
-## ❓ Troubleshooting
+Unit tests for Cart class (add/remove/update quantity logic)
+View tests for order placement and status transitions
+Auth flow tests (register/login/logout)
 
-**`ModuleNotFoundError: No module named 'PIL'`**
-```bash
-pip install pillow
-```
 
-**`OperationalError: no such table`**
-```bash
-python manage.py makemigrations
+Run with: python manage.py test
+
+
+
+
+🚀 Deployment
+
+Deployed live on PythonAnywhere. To deploy your own copy:
+
+
+Push code to GitHub
+Create a PythonAnywhere web app pointed at your repo
+Set DEBUG = False and configure ALLOWED_HOSTS in settings.py
+Run python manage.py collectstatic
+Set environment variables for SECRET_KEY and admin credentials (don't commit these)
+
+
+
+🔭 Planned Improvements
+
+FeatureNotesREST APIAdd Django REST Framework — serializers + ListAPIView for menu browsingOnline paymentIntegrate Razorpay/Stripe in orders/views.py checkoutFood ratingsNew Rating model in menu appSearchFilter menu using Q() objects in menu/views.pyEmail confirmationUse Django's send_mail() after order placementAutomated testsCover cart logic, order flow, and authCustom user profileExtend AbstractUser in users/models.py
+
+
+❓ Troubleshooting
+
+ModuleNotFoundError: No module named 'PIL'
+
+bashpip install pillow
+
+OperationalError: no such table
+
+bashpython manage.py makemigrations
 python manage.py migrate
-```
 
-**Static files not loading**
-- Make sure `DEBUG = True` in `settings.py`
-- Run `python manage.py collectstatic` for production
+Static files not loading
 
-**Images not showing**
-- Check `MEDIA_URL` and `MEDIA_ROOT` in `settings.py`
-- Ensure `urls.py` includes `static(MEDIA_URL, ...)` at the end
 
----
+Ensure DEBUG = True locally, or run python manage.py collectstatic for production
 
-Built with ❤️ using Django 🐍 | SQLite 🗄️ | Vanilla JS ⚡
+
+Images not showing
+
+
+Check MEDIA_URL and MEDIA_ROOT in settings.py
+Ensure urls.py includes static(MEDIA_URL, ...) at the end
