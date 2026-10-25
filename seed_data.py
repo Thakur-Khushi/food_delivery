@@ -6,6 +6,7 @@ OR: python seed_data.py (from project root)
 Creates sample categories and food items for testing.
 """
 import os
+import secrets
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'food_delivery.settings')
 django.setup()
@@ -81,12 +82,16 @@ for name, cat_name, price, desc, is_veg in food_items_data:
     if created:
         print(f"  Created: {name} - ₹{price}")
 
-# Create admin superuser if not exists
+
+admin_password = None
 if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@foodapp.com', 'admin123')
-    print("\nCreated superuser: admin / admin123")
+    admin_password = os.environ.get('ADMIN_PASSWORD') or secrets.token_urlsafe(12)
+    User.objects.create_superuser('admin', 'admin@foodapp.com', admin_password)
+    print("\nCreated superuser: admin")
 
 print("\n✅ Seed data complete!")
 print(f"   Categories: {Category.objects.count()}")
 print(f"   Food Items: {FoodItem.objects.count()}")
-print(f"\n🔑 Admin login: username=admin, password=admin123")
+if admin_password and not os.environ.get('ADMIN_PASSWORD'):
+    print(f"\n🔑 Admin login: username=admin, password={admin_password}")
+    print("   Save this now; it won't be shown again.")
